@@ -1,0 +1,6 @@
+{
+  "name": "FSSAI Food Compliance Scanner",
+  "description": "AI-powered FSSAI food label compliance platform utilizing a deterministic rule engine and semantic AI claim verification.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
