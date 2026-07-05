@@ -7,7 +7,7 @@ import express from 'express';
 import path from 'path';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
-import { calculateComplianceScore, runFssaiComplianceEngine } from './src/utils/fssaiRules';
+import { calculateComplianceScore, runFssaiComplianceEngine } from './src/rules';
 import { CanonicalProduct, ComplianceReport } from './src/types';
 import { mapToCanonicalProduct } from './src/mapper/mapper';
 import { retrieveRegulationExcerpts, runSemanticReasoning } from './src/services/semanticReasoning';

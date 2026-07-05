@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { SAMPLE_COMPLIANCE_REPORTS } from '../utils/sampleProducts';
 import { ComplianceReport } from '../types';
+import { preprocessor, ProcessedImage } from '../services/image/imagePreprocessor';
 
 interface UploaderProps {
   onAnalyzeStart: (provider: 'gemini' | 'mock') => void;
@@ -24,6 +25,32 @@ interface UploadedFile {
   mimeType: string;
   previewUrl: string;
   labelType: 'front' | 'side' | 'back' | 'other';
+  preprocessResult: ProcessedImage;
+}
+
+function formatBytes(bytes: number, decimals = 1): string {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
+function fileToBase64(file: File): Promise<{ base64: string; dataUrl: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        const base64 = reader.result.split(',')[1];
+        resolve({ base64, dataUrl: reader.result });
+      } else {
+        reject(new Error('Failed to read file as base64 data URL'));
+      }
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
 }
 
 export default function Uploader({ onAnalyzeStart, onAnalyzeComplete, onAnalyzeError }: UploaderProps) {
@@ -59,42 +86,45 @@ export default function Uploader({ onAnalyzeStart, onAnalyzeComplete, onAnalyzeE
     setCustomError(null);
     const newFilesList = Array.from(files);
 
-    newFilesList.forEach((file) => {
+    newFilesList.forEach(async (file) => {
       if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
         setCustomError('Unsupported file type found. Please upload packaged food label images (PNG/JPG) or PDFs.');
         return;
       }
 
-      const reader = new FileReader();
       const id = 'file-' + Math.random().toString(36).substring(2, 9);
 
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          const base64Data = reader.result.split(',')[1];
-          const previewUrl = reader.result;
+      try {
+        // Run modular preprocess pipeline (smart resize & compress)
+        const preprocessResult = await preprocessor.preprocess(file);
 
-          setUploadedFiles((prev) => {
-            // Pick a reasonable initial tag based on current length
-            let labelType: 'front' | 'side' | 'back' | 'other' = 'front';
-            if (prev.length === 1) labelType = 'back';
-            else if (prev.length === 2) labelType = 'side';
-            else if (prev.length > 2) labelType = 'other';
+        // Read the resulting upload-ready file as Base64/DataURL
+        const { base64, dataUrl: previewUrl } = await fileToBase64(preprocessResult.uploadFile);
 
-            return [
-              ...prev,
-              {
-                id,
-                name: file.name,
-                base64: base64Data,
-                mimeType: file.type || 'image/jpeg',
-                previewUrl,
-                labelType
-              }
-            ];
-          });
-        }
-      };
-      reader.readAsDataURL(file);
+        setUploadedFiles((prev) => {
+          // Pick a reasonable initial tag based on current length
+          let labelType: 'front' | 'side' | 'back' | 'other' = 'front';
+          if (prev.length === 1) labelType = 'back';
+          else if (prev.length === 2) labelType = 'side';
+          else if (prev.length > 2) labelType = 'other';
+
+          return [
+            ...prev,
+            {
+              id,
+              name: file.name,
+              base64,
+              mimeType: preprocessResult.uploadFile.type || 'image/jpeg',
+              previewUrl,
+              labelType,
+              preprocessResult
+            }
+          ];
+        });
+      } catch (err: any) {
+        console.error('Error during image preprocessing:', err);
+        setCustomError(`Failed to process ${file.name}. Please try again or upload a smaller file.`);
+      }
     });
   };
 
@@ -328,9 +358,55 @@ export default function Uploader({ onAnalyzeStart, onAnalyzeComplete, onAnalyzeE
                           <p className="font-mono text-xs font-semibold text-slate-200 truncate" title={file.name}>
                             {file.name}
                           </p>
-                          <p className="text-[10px] text-slate-500 mt-0.5">
-                            {(file.base64.length * 0.75 / 1024).toFixed(1)} KB &bull; {file.mimeType.split('/')[1].toUpperCase()}
-                          </p>
+                          
+                          {/* Preprocessor Stats Display */}
+                          {file.preprocessResult && (
+                            <div className="mt-2 bg-black/30 rounded-lg p-2 border border-white/5 space-y-1.5 text-[10px] font-sans">
+                              {file.preprocessResult.wasResized ? (
+                                <>
+                                  <div className="flex justify-between text-slate-400 border-b border-white/5 pb-1 mb-1">
+                                    <span className="font-medium text-amber-500/95">Smart Resized</span>
+                                    <span className="font-semibold text-emerald-400">
+                                      -{(((file.preprocessResult.originalFile.size - file.preprocessResult.uploadFile.size) / file.preprocessResult.originalFile.size) * 100).toFixed(0)}% smaller
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between text-slate-500">
+                                    <span>Original</span>
+                                    <span className="font-mono text-slate-300">
+                                      {file.preprocessResult.originalWidth} &times; {file.preprocessResult.originalHeight} &bull; {formatBytes(file.preprocessResult.originalFile.size)}
+                                    </span>
+                                  </div>
+                                  <div className="flex justify-between text-slate-500">
+                                    <span>Upload</span>
+                                    <span className="font-mono text-slate-200 font-semibold">
+                                      {file.preprocessResult.uploadWidth} &times; {file.preprocessResult.uploadHeight} &bull; {formatBytes(file.preprocessResult.uploadFile.size)}
+                                    </span>
+                                  </div>
+                                </>
+                              ) : (
+                                <>
+                                  <div className="flex justify-between text-slate-400 border-b border-white/5 pb-1 mb-1 font-sans">
+                                    <span className="font-medium text-slate-400">Original Preserved</span>
+                                    <span className="font-semibold text-slate-500">Uncompressed</span>
+                                  </div>
+                                  <div className="flex justify-between text-slate-500">
+                                    <span>Size / Format</span>
+                                    <span className="font-mono text-slate-300">
+                                      {formatBytes(file.preprocessResult.originalFile.size)} &bull; {file.mimeType.split('/')[1].toUpperCase()}
+                                    </span>
+                                  </div>
+                                  {file.preprocessResult.originalWidth > 0 && (
+                                    <div className="flex justify-between text-slate-500">
+                                      <span>Dimensions</span>
+                                      <span className="font-mono text-slate-300">
+                                        {file.preprocessResult.originalWidth} &times; {file.preprocessResult.originalHeight}
+                                      </span>
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
                         </div>
 
                         {/* Package Side Tag Pill Group */}

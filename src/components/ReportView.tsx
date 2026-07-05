@@ -20,6 +20,7 @@ interface ReportViewProps {
 export default function ReportView({ report, onBack }: ReportViewProps) {
   const [activeTab, setActiveTab] = useState<'all' | 'fail' | 'warning' | 'pass'>('all');
   const [expandedAdditives, setExpandedAdditives] = useState<Record<string, boolean>>({});
+  const [showRawTextDebug, setShowRawTextDebug] = useState(false);
 
   const toggleAdditive = (name: string) => {
     setExpandedAdditives(prev => ({
@@ -177,6 +178,36 @@ export default function ReportView({ report, onBack }: ReportViewProps) {
               )}
             </div>
           </div>
+
+          {Object.values(report.productData).some(field => field && typeof field === 'object' && 'rawText' in field && field.rawText) && (
+            <div className="mt-4 pt-3 border-t border-white/5">
+              <button
+                type="button"
+                onClick={() => setShowRawTextDebug(!showRawTextDebug)}
+                className="w-full flex items-center justify-between text-[11px] font-semibold text-slate-400 hover:text-white transition-colors cursor-pointer"
+              >
+                <span>Raw Extracted Text (Debug)</span>
+                {showRawTextDebug ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+              </button>
+              
+              {showRawTextDebug && (
+                <div className="mt-3 space-y-2 max-h-[200px] overflow-y-auto pr-1 text-[10px] font-mono text-slate-400 bg-black/30 rounded p-2 border border-white/5">
+                  {Object.entries(report.productData).map(([key, field]: [string, any]) => {
+                    if (field && typeof field === 'object' && field.rawText) {
+                      const displayKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                      return (
+                        <div key={key} className="space-y-0.5 border-b border-white/5 pb-1 last:border-b-0 last:pb-0">
+                          <p className="text-slate-500 font-sans font-semibold text-[9px]">{displayKey}</p>
+                          <p className="whitespace-pre-wrap break-all text-slate-300">{field.rawText}</p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -322,6 +353,19 @@ export default function ReportView({ report, onBack }: ReportViewProps) {
                           }`}>
                             {finding.status}
                           </span>
+                          {finding.severity && (
+                            <span className={`inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${
+                              finding.severity === 'CRITICAL'
+                                ? 'bg-rose-500/20 text-rose-300 ring-1 ring-inset ring-rose-500/30'
+                                : finding.severity === 'MAJOR'
+                                  ? 'bg-amber-500/20 text-amber-300 ring-1 ring-inset ring-amber-500/30'
+                                  : finding.severity === 'MINOR'
+                                    ? 'bg-blue-500/10 text-blue-400 ring-1 ring-inset ring-blue-500/20'
+                                    : 'bg-slate-500/10 text-slate-400 ring-1 ring-inset ring-slate-500/20'
+                            }`}>
+                              {finding.severity}
+                            </span>
+                          )}
                           <span className="text-xs text-slate-500 font-mono font-medium">{finding.category}</span>
                         </div>
                         <h4 className="font-sans text-sm font-bold text-white">{finding.title}</h4>

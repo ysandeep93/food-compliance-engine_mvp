@@ -30,6 +30,7 @@ export interface DateMarking {
 
 export interface ExtractedField<T> {
   value: T | null;
+  rawText?: string;
   confidence?: number;
   source: string;
 }
@@ -77,7 +78,8 @@ export interface RuleFinding {
   ruleId: string;
   title: string;
   passed: boolean;
-  severity: 'FAIL' | 'WARNING';
+  status?: 'PASS' | 'FAIL' | 'WARNING';
+  severity: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO' | 'FAIL' | 'WARNING';
   evidence: string;
   message: string;
   suggestedFix: string;
@@ -122,7 +124,7 @@ export interface ComplianceReport {
     category: string;
     title: string;
     status: 'PASS' | 'FAIL' | 'WARNING';
-    severity: 'FAIL' | 'WARNING';
+    severity: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
     evidence: string;
     suggestedFix: string;
     citation: string;

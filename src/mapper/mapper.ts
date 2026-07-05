@@ -102,19 +102,116 @@ export function mapToCanonicalProduct(geminiData: GeminiExtractionResponse): Can
     return undefined;
   };
 
+  const getFieldRawText = (fieldName: string, fallback?: string): string | undefined => {
+    if (!geminiData) return undefined;
+    
+    // Resolve actual field key or alias
+    let val: any = undefined;
+    if (fieldName === 'brand') {
+      val = geminiData.brandName !== undefined ? geminiData.brandName : geminiData.brand;
+    } else if (fieldName === 'dates') {
+      val = geminiData.dateMarking !== undefined ? geminiData.dateMarking : geminiData.dates;
+    } else if (fieldName === 'manufacturer') {
+      val = geminiData.manufacturerDetails !== undefined ? geminiData.manufacturerDetails : geminiData.manufacturer;
+    } else if (fieldName === 'importer') {
+      val = geminiData.importerDetails !== undefined ? geminiData.importerDetails : geminiData.importer;
+    } else if (fieldName === 'fssaiLicenses') {
+      val = geminiData.fssaiLicenses !== undefined ? geminiData.fssaiLicenses : geminiData.fssaiLicense;
+    } else {
+      val = geminiData[fieldName];
+    }
+
+    // 1. Check nested rawText/rawValue/text properties with prefixes and aliases
+    const possiblePrefixes = [fieldName];
+    if (fieldName === 'brand') possiblePrefixes.push('brandName');
+    if (fieldName === 'dates') possiblePrefixes.push('dateMarking');
+    if (fieldName === 'manufacturer') possiblePrefixes.push('manufacturerDetails');
+    if (fieldName === 'importer') possiblePrefixes.push('importerDetails');
+    if (fieldName === 'fssaiLicenses') possiblePrefixes.push('fssaiLicense');
+
+    for (const prefix of possiblePrefixes) {
+      const pVal = geminiData[prefix];
+      if (pVal && typeof pVal === 'object' && !Array.isArray(pVal)) {
+        if (typeof pVal.rawText === 'string') return pVal.rawText;
+        if (typeof pVal.rawValue === 'string') return pVal.rawValue;
+        if (typeof pVal.text === 'string') return pVal.text;
+      }
+      if (typeof geminiData[`${prefix}RawText`] === 'string') {
+        return geminiData[`${prefix}RawText`];
+      }
+      if (typeof geminiData[`${prefix}_rawText`] === 'string') {
+        return geminiData[`${prefix}_rawText`];
+      }
+      if (typeof geminiData[`${prefix}RawValue`] === 'string') {
+        return geminiData[`${prefix}RawValue`];
+      }
+      if (typeof geminiData[`${prefix}_rawValue`] === 'string') {
+        return geminiData[`${prefix}_rawValue`];
+      }
+    }
+
+    // 2. Check if val is defined and process its raw type
+    if (val !== undefined && val !== null) {
+      if (typeof val === 'string') {
+        return val;
+      }
+      if (typeof val === 'number' || typeof val === 'boolean') {
+        return String(val);
+      }
+      if (Array.isArray(val)) {
+        const isSimpleArray = val.every(item => typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean');
+        if (isSimpleArray) {
+          return val.join(', ');
+        } else {
+          return val.map(item => {
+            if (item && typeof item === 'object') {
+              return Object.entries(item)
+                .map(([k, v]) => `${k}: ${v}`)
+                .join(', ');
+            }
+            return String(item);
+          }).join(' | ');
+        }
+      }
+      if (typeof val === 'object') {
+        return Object.entries(val)
+          .map(([k, v]) => {
+            if (v && typeof v === 'object' && !Array.isArray(v)) {
+              const nested = Object.entries(v)
+                .map(([nk, nv]) => `${nk}: ${nv}`)
+                .join(', ');
+              return `${k} (${nested})`;
+            }
+            return `${k}: ${v}`;
+          })
+          .join(', ');
+      }
+    }
+    
+    // 3. Fallback to passed fallback
+    if (typeof fallback === 'string') {
+      return fallback;
+    }
+    
+    return undefined;
+  };
+
   return {
     productName: {
       value: geminiData.productName || 'Unknown Product',
+      rawText: getFieldRawText('productName', geminiData.productName),
       confidence: getFieldConfidence('productName'),
       source
     },
     brand: {
       value: geminiData.brandName || geminiData.brand || 'Unknown Brand',
+      rawText: getFieldRawText('brand', geminiData.brandName || geminiData.brand),
       confidence: getFieldConfidence('brand'),
       source
     },
     ingredients: {
       value: geminiData.ingredients || [],
+      rawText: getFieldRawText('ingredients', geminiData.ingredients ? geminiData.ingredients.join(', ') : undefined),
       confidence: getFieldConfidence('ingredients'),
       source
     },
@@ -130,26 +227,31 @@ export function mapToCanonicalProduct(geminiData: GeminiExtractionResponse): Can
         transFat: geminiData.nutrition?.transFat ? { value: Number(geminiData.nutrition.transFat.value) || 0, unit: geminiData.nutrition.transFat.unit || 'g' } : undefined,
         sodium: geminiData.nutrition?.sodium ? { value: Number(geminiData.nutrition.sodium.value) || 0, unit: geminiData.nutrition.sodium.unit || 'mg' } : undefined,
       },
+      rawText: getFieldRawText('nutrition'),
       confidence: getFieldConfidence('nutrition'),
       source
     },
     claims: {
       value: geminiData.claims || [],
+      rawText: getFieldRawText('claims', geminiData.claims ? geminiData.claims.join(', ') : undefined),
       confidence: getFieldConfidence('claims'),
       source
     },
     manufacturer: {
       value: geminiData.manufacturerDetails || geminiData.manufacturer || '',
+      rawText: getFieldRawText('manufacturer', geminiData.manufacturerDetails || geminiData.manufacturer),
       confidence: getFieldConfidence('manufacturer'),
       source
     },
     importer: {
       value: geminiData.importerDetails || geminiData.importer || '',
+      rawText: getFieldRawText('importer', geminiData.importerDetails || geminiData.importer),
       confidence: getFieldConfidence('importer'),
       source
     },
     fssaiLicenses: {
       value: parseFssaiLicenses(geminiData.fssaiLicenses || geminiData.fssaiLicense),
+      rawText: getFieldRawText('fssaiLicenses', typeof geminiData.fssaiLicenses === 'string' ? geminiData.fssaiLicenses : undefined),
       confidence: getFieldConfidence('fssaiLicenses'),
       source
     },
@@ -159,6 +261,7 @@ export function mapToCanonicalProduct(geminiData: GeminiExtractionResponse): Can
         hasVegLogo: geminiData.hasVegLogo !== undefined ? !!geminiData.hasVegLogo : false,
         extractedLogos: geminiData.extractedLogos || geminiData.logos || [],
       },
+      rawText: getFieldRawText('logos'),
       confidence: getFieldConfidence('logos'),
       source
     },
@@ -168,11 +271,13 @@ export function mapToCanonicalProduct(geminiData: GeminiExtractionResponse): Can
         bestBefore: geminiData.dateMarking?.bestBefore || geminiData.dates?.bestBefore || '',
         expiryDate: geminiData.dateMarking?.expiryDate || geminiData.dates?.expiryDate || '',
       },
+      rawText: getFieldRawText('dates'),
       confidence: getFieldConfidence('dates'),
       source
     },
     storageInstructions: {
       value: geminiData.storageInstructions || '',
+      rawText: getFieldRawText('storageInstructions', geminiData.storageInstructions),
       confidence: getFieldConfidence('storageInstructions'),
       source
     },
@@ -182,6 +287,7 @@ export function mapToCanonicalProduct(geminiData: GeminiExtractionResponse): Can
         allergenInfo: geminiData.allergenInfo || '',
         netQuantity: geminiData.netQuantity || '',
       },
+      rawText: getFieldRawText('warnings'),
       confidence: getFieldConfidence('warnings'),
       source
     }

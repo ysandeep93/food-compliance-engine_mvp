@@ -111,7 +111,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Mandatory Declarations',
         title: 'Product Name presence',
         status: 'PASS',
-        severity: 'FAIL',
+        severity: 'CRITICAL',
         evidence: 'Product name detected: "Instant Noodles with Masala Tastemaker"',
         suggestedFix: '',
         citation: 'FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.1.1'
@@ -121,7 +121,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'FSSAI Licenses',
         title: 'FSSAI License 14-digit format',
         status: 'PASS',
-        severity: 'FAIL',
+        severity: 'CRITICAL',
         evidence: 'Valid 14-digit FSSAI license format: 10012011000168',
         suggestedFix: '',
         citation: 'FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.7.1'
@@ -131,7 +131,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Veg / Non-Veg Symbols',
         title: 'Veg / Non-Veg symbol presence',
         status: 'PASS',
-        severity: 'FAIL',
+        severity: 'MAJOR',
         evidence: 'FSSAI Vegetarian (Green Circle) symbol detected successfully.',
         suggestedFix: '',
         citation: 'FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.4'
@@ -141,7 +141,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Nutrition Labelling',
         title: 'Sodium declaration',
         status: 'PASS',
-        severity: 'FAIL',
+        severity: 'MAJOR',
         evidence: 'Sodium declared: 1250 mg',
         suggestedFix: '',
         citation: 'FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.d'
@@ -151,7 +151,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Food Category Requirements',
         title: 'HFSS - High Sodium Evaluation',
         status: 'WARNING',
-        severity: 'WARNING',
+        severity: 'MINOR',
         evidence: 'Sodium content (1250 mg) compared to Energy (427 kcal) is 2.93 mg/kcal. This exceeds the HFSS risk ratio of 1.0.',
         suggestedFix: 'Recommend reducing sodium content or adding a salt-intake warning indicator on the packaging.',
         citation: 'FSSAI Guidelines for High Fat, Sugar and Salt (HFSS) Foods'
@@ -161,7 +161,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Special Declarations',
         title: 'Monosodium Glutamate (MSG) declaration',
         status: 'WARNING',
-        severity: 'WARNING',
+        severity: 'MINOR',
         evidence: 'Monosodium Glutamate (MSG / INS 621) is listed in ingredients, but the standard safety disclaimer is missing.',
         suggestedFix: 'Print: "CONTAINS ADDED MONOSODIUM GLUTAMATE. NOT RECOMMENDED FOR INFANTS AND CHILDREN BELOW 12 MONTHS."',
         citation: 'FSS (Packaging and Labelling) Regulations, 2011 - Clause 2.4.4.12'
@@ -261,7 +261,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Mandatory Declarations',
         title: 'Product Name presence',
         status: 'PASS',
-        severity: 'FAIL',
+        severity: 'CRITICAL',
         evidence: 'Product name detected: "100% Mixed Fruit Juice"',
         suggestedFix: '',
         citation: 'FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.1.1'
@@ -271,7 +271,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Nutrition Labelling',
         title: 'Added Sugars declaration',
         status: 'PASS',
-        severity: 'FAIL',
+        severity: 'MINOR',
         evidence: 'Added Sugars declared: 0.0 g',
         suggestedFix: '',
         citation: 'FSS (Labelling and Display) First Amendment Regulations, 2020'
@@ -281,7 +281,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Food Category Requirements',
         title: 'HFSS - High Added Sugar Evaluation',
         status: 'PASS',
-        severity: 'WARNING',
+        severity: 'MINOR',
         evidence: 'Added sugar is within recommended FSSAI threshold boundaries (0g added sugar).',
         suggestedFix: '',
         citation: 'FSSAI Dietary Guidelines and HFSS Food Consultation Draft'
@@ -375,7 +375,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Storage Instructions',
         title: 'Storage Instructions presence',
         status: 'WARNING',
-        severity: 'WARNING',
+        severity: 'MINOR',
         evidence: 'No specific storage guidelines were detected.',
         suggestedFix: 'Add standard storage text like "Store in a cool, dry place away from direct sunlight" to protect the food quality.',
         citation: 'FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.8.5'
@@ -385,7 +385,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Food Category Requirements',
         title: 'HFSS - High Added Sugar Evaluation',
         status: 'WARNING',
-        severity: 'WARNING',
+        severity: 'MINOR',
         evidence: 'Added Sugar (32.4g = 129.6 kcal) represents 26.5% of total Energy (489 kcal), which exceeds the FSSAI recommended HFSS threshold of 10%.',
         suggestedFix: 'Consider reformulating to reduce added sugar content or clearly display high-sugar information to consumers.',
         citation: 'FSSAI Dietary Guidelines and HFSS Food Consultation Draft'
@@ -395,7 +395,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
         category: 'Food Category Requirements',
         title: 'HFSS - High Sodium Evaluation',
         status: 'WARNING',
-        severity: 'WARNING',
+        severity: 'MINOR',
         evidence: 'Sodium content (412 mg) compared to Energy (489 kcal) is 0.84 mg/kcal. While within extreme danger limit, it represents high sodium for baked sweets.',
         suggestedFix: 'Consider lowering sodium during recipe formulation.',
         citation: 'FSSAI Guidelines for High Fat, Sugar and Salt (HFSS) Foods'
