@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CanonicalProduct, RuleFinding } from '../types';
+import { CanonicalProduct, RawRuleFinding } from '../types';
 import { getRuleFromCatalog } from './index';
 
-export const FSSAI_LICENSE_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const FSSAI_LICENSE_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('FSSAI_LICENSE_PRESENCE');
   const licenses = product.fssaiLicenses?.value || [];
   const validLicenses = licenses.filter(l => l.number && l.number.trim() !== '');
@@ -40,7 +40,7 @@ export const FSSAI_LICENSE_PRESENCE = (product: CanonicalProduct): RuleFinding |
   };
 };
 
-export const FSSAI_LICENSE_FORMAT = (product: CanonicalProduct): RuleFinding | null => {
+export const FSSAI_LICENSE_FORMAT = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('FSSAI_LICENSE_FORMAT');
   const licenses = product.fssaiLicenses?.value || [];
   if (licenses.length === 0) return null; // NOT_APPLICABLE status is handled by returning null
@@ -94,7 +94,7 @@ export const FSSAI_LICENSE_FORMAT = (product: CanonicalProduct): RuleFinding | n
   };
 };
 
-export const FSSAI_LICENSE_PREFIX = (product: CanonicalProduct): RuleFinding | null => {
+export const FSSAI_LICENSE_PREFIX = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('FSSAI_LICENSE_PREFIX');
   const licenses = product.fssaiLicenses?.value || [];
   if (licenses.length === 0) return null; // NOT_APPLICABLE status is handled by returning null
@@ -144,7 +144,7 @@ export const FSSAI_LICENSE_PREFIX = (product: CanonicalProduct): RuleFinding | n
   };
 };
 
-export const IMPORT_ORIGIN_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const IMPORT_ORIGIN_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('IMPORT_ORIGIN_PRESENCE');
   const importerVal = product.importer?.value;
   const manufVal = product.manufacturer?.value;
@@ -175,7 +175,7 @@ export const IMPORT_ORIGIN_PRESENCE = (product: CanonicalProduct): RuleFinding |
   };
 };
 
-export const IMPORT_DETAILS_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const IMPORT_DETAILS_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('IMPORT_DETAILS_PRESENCE');
   const importerVal = product.importer?.value;
   const manufVal = product.manufacturer?.value;

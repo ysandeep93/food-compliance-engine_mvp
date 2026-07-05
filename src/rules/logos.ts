@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CanonicalProduct, RuleFinding } from '../types';
+import { CanonicalProduct, RawRuleFinding } from '../types';
 import { getRuleFromCatalog } from './index';
 
-export const VEG_NONVEG_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const VEG_NONVEG_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('VEG_NONVEG_PRESENCE');
   const logosVal = product.logos?.value;
   if (!logosVal || logosVal.isVeg === null) {

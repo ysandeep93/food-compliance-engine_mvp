@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CanonicalProduct, RuleFinding } from '../types';
+import { CanonicalProduct, RawRuleFinding } from '../types';
 import { getRuleFromCatalog } from './index';
 
-export const MAND_PROD_NAME = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_PROD_NAME = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_PROD_NAME');
   const val = product.productName?.value;
   if (!val || val.trim() === '') {
@@ -33,7 +33,7 @@ export const MAND_PROD_NAME = (product: CanonicalProduct): RuleFinding | null =>
   };
 };
 
-export const MAND_BRAND_NAME = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_BRAND_NAME = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_BRAND_NAME');
   const val = product.brand?.value;
   if (!val || val.trim() === '') {
@@ -60,7 +60,7 @@ export const MAND_BRAND_NAME = (product: CanonicalProduct): RuleFinding | null =
   };
 };
 
-export const MAND_NET_QTY = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_NET_QTY = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_NET_QTY');
   const val = product.warnings?.value?.netQuantity;
   if (!val || val.trim() === '') {
@@ -100,7 +100,7 @@ export const MAND_NET_QTY = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const MAND_MANUF_DETAILS = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_MANUF_DETAILS = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_MANUF_DETAILS');
   const val = product.manufacturer?.value;
   if (!val || val.trim() === '') {
@@ -127,7 +127,7 @@ export const MAND_MANUF_DETAILS = (product: CanonicalProduct): RuleFinding | nul
   };
 };
 
-export const DATE_MANUF_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const DATE_MANUF_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('DATE_MANUF_PRESENCE');
   const datesVal = product.dates?.value;
   if (!datesVal || !datesVal.manufactureDate) {
@@ -154,7 +154,7 @@ export const DATE_MANUF_PRESENCE = (product: CanonicalProduct): RuleFinding | nu
   };
 };
 
-export const DATE_EXPIRY_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const DATE_EXPIRY_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('DATE_EXPIRY_PRESENCE');
   const datesVal = product.dates?.value;
   const bestBefore = datesVal?.bestBefore;
@@ -183,7 +183,7 @@ export const DATE_EXPIRY_PRESENCE = (product: CanonicalProduct): RuleFinding | n
   };
 };
 
-export const DATE_FORMAT = (product: CanonicalProduct): RuleFinding | null => {
+export const DATE_FORMAT = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('DATE_FORMAT');
   const datesVal = product.dates?.value;
   const datesToTest = [
@@ -221,7 +221,7 @@ export const DATE_FORMAT = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const MAND_BATCH_NUM = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_BATCH_NUM = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_BATCH_NUM');
   const val = product.warnings?.value?.batchNumber;
   if (!val || val.trim() === '') {
@@ -248,7 +248,7 @@ export const MAND_BATCH_NUM = (product: CanonicalProduct): RuleFinding | null =>
   };
 };
 
-export const MAND_STORAGE_INSTR = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_STORAGE_INSTR = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_STORAGE_INSTR');
   const val = product.storageInstructions?.value;
   if (!val || val.trim() === '') {

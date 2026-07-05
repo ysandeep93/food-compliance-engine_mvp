@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CanonicalProduct, RuleFinding } from '../types';
+import { CanonicalProduct, RawRuleFinding } from '../types';
 import { getRuleFromCatalog } from './index';
 
-export const MAND_INGREDIENTS = (product: CanonicalProduct): RuleFinding | null => {
+export const MAND_INGREDIENTS = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MAND_INGREDIENTS');
   const val = product.ingredients?.value;
   if (!val || val.length === 0) {
@@ -33,7 +33,7 @@ export const MAND_INGREDIENTS = (product: CanonicalProduct): RuleFinding | null 
   };
 };
 
-export const ALLERGEN_WARNING = (product: CanonicalProduct): RuleFinding | null => {
+export const ALLERGEN_WARNING = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('ALLERGEN_WARNING');
   const commonAllergens = ['wheat', 'gluten', 'soy', 'soya', 'milk', 'peanut', 'almond', 'cashew', 'nuts', 'egg', 'fish', 'sesame'];
   const ingredients = product.ingredients?.value || [];
@@ -78,7 +78,7 @@ export const ALLERGEN_WARNING = (product: CanonicalProduct): RuleFinding | null 
   };
 };
 
-export const MSG_WARNING_CHECK = (product: CanonicalProduct): RuleFinding | null => {
+export const MSG_WARNING_CHECK = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('MSG_WARNING_CHECK');
   const ingredients = product.ingredients?.value || [];
   const ingredientsText = ingredients.join(' ').toLowerCase();
@@ -112,7 +112,7 @@ export const MSG_WARNING_CHECK = (product: CanonicalProduct): RuleFinding | null
   };
 };
 
-export const SWEETENER_WARNING_CHECK = (product: CanonicalProduct): RuleFinding | null => {
+export const SWEETENER_WARNING_CHECK = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('SWEETENER_WARNING_CHECK');
   const sweeteners = ['aspartame', 'sucralose', 'acesulfame', 'neotame', 'saccharin', 'ins 950', 'ins 951', 'ins 955', 'steviol', 'ins 960'];
   const ingredients = product.ingredients?.value || [];

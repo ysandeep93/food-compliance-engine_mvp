@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CanonicalProduct, RuleFinding } from '../types';
+import { CanonicalProduct, RawRuleFinding } from '../types';
 import { getRuleFromCatalog } from './index';
 
-export const NUTR_TABLE_PRESENCE = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_TABLE_PRESENCE = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_TABLE_PRESENCE');
   const nutritionVal = product.nutrition?.value;
   const keys = nutritionVal ? Object.keys(nutritionVal) : [];
@@ -34,7 +34,7 @@ export const NUTR_TABLE_PRESENCE = (product: CanonicalProduct): RuleFinding | nu
   };
 };
 
-export const NUTR_ENERGY = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_ENERGY = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_ENERGY');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -62,7 +62,7 @@ export const NUTR_ENERGY = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const NUTR_PROTEIN = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_PROTEIN = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_PROTEIN');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -90,7 +90,7 @@ export const NUTR_PROTEIN = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const NUTR_CARBS = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_CARBS = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_CARBS');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -118,7 +118,7 @@ export const NUTR_CARBS = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const NUTR_TOTAL_SUGARS = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_TOTAL_SUGARS = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_TOTAL_SUGARS');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -146,7 +146,7 @@ export const NUTR_TOTAL_SUGARS = (product: CanonicalProduct): RuleFinding | null
   };
 };
 
-export const NUTR_ADDED_SUGARS = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_ADDED_SUGARS = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_ADDED_SUGARS');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -174,7 +174,7 @@ export const NUTR_ADDED_SUGARS = (product: CanonicalProduct): RuleFinding | null
   };
 };
 
-export const NUTR_FAT = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_FAT = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_FAT');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -202,7 +202,7 @@ export const NUTR_FAT = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const NUTR_SAT_FAT = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_SAT_FAT = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_SAT_FAT');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -230,7 +230,7 @@ export const NUTR_SAT_FAT = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const NUTR_TRANS_FAT = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_TRANS_FAT = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_TRANS_FAT');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -258,7 +258,7 @@ export const NUTR_TRANS_FAT = (product: CanonicalProduct): RuleFinding | null =>
   };
 };
 
-export const NUTR_SODIUM = (product: CanonicalProduct): RuleFinding | null => {
+export const NUTR_SODIUM = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('NUTR_SODIUM');
   const nutritionVal = product.nutrition?.value;
   if (!nutritionVal || Object.keys(nutritionVal).length === 0) return null;
@@ -286,7 +286,7 @@ export const NUTR_SODIUM = (product: CanonicalProduct): RuleFinding | null => {
   };
 };
 
-export const HFSS_HIGH_SUGAR = (product: CanonicalProduct): RuleFinding | null => {
+export const HFSS_HIGH_SUGAR = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('HFSS_HIGH_SUGAR');
   const nutritionVal = product.nutrition?.value;
   const addedSugar = nutritionVal?.addedSugars?.value;
@@ -322,7 +322,7 @@ export const HFSS_HIGH_SUGAR = (product: CanonicalProduct): RuleFinding | null =
   };
 };
 
-export const HFSS_HIGH_SODIUM = (product: CanonicalProduct): RuleFinding | null => {
+export const HFSS_HIGH_SODIUM = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('HFSS_HIGH_SODIUM');
   const nutritionVal = product.nutrition?.value;
   const sodium = nutritionVal?.sodium?.value;
@@ -356,7 +356,7 @@ export const HFSS_HIGH_SODIUM = (product: CanonicalProduct): RuleFinding | null 
   };
 };
 
-export const HFSS_HIGH_TRANS_FAT = (product: CanonicalProduct): RuleFinding | null => {
+export const HFSS_HIGH_TRANS_FAT = (product: CanonicalProduct): RawRuleFinding | null => {
   const meta = getRuleFromCatalog('HFSS_HIGH_TRANS_FAT');
   const nutritionVal = product.nutrition?.value;
   const transFat = nutritionVal?.transFat?.value;

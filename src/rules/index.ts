@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { CanonicalProduct, RuleFinding, ComplianceReport } from '../types';
+import { CanonicalProduct, RuleFinding, RawRuleFinding, ComplianceReport } from '../types';
 import { mandatoryRules } from './mandatory';
 import { ingredientsRules } from './ingredients';
 import { nutritionRules } from './nutrition';
@@ -163,8 +163,8 @@ export function runAllRules(product: CanonicalProduct, threshold: number = 0.70)
           }
         }
 
-        // Determine the evaluation status (PASS, FAIL, WARNING)
-        let status: 'PASS' | 'FAIL' | 'WARNING';
+        // Determine the evaluation status (PASS, FAIL, WARNING, NOT_APPLICABLE)
+        let status: 'PASS' | 'FAIL' | 'WARNING' | 'NOT_APPLICABLE';
         if (rawResult.status) {
           status = rawResult.status;
         } else {
@@ -175,7 +175,7 @@ export function runAllRules(product: CanonicalProduct, threshold: number = 0.70)
         let severity: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
         const rawSev = rawResult.severity;
         if (rawSev && ['CRITICAL', 'MAJOR', 'MINOR', 'INFO'].includes(rawSev)) {
-          severity = rawSev as any;
+          severity = rawSev as 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
         } else {
           severity = getRuleSeverity(rawResult.ruleId);
         }
@@ -209,8 +209,8 @@ export function runFssaiComplianceEngine(product: CanonicalProduct, threshold: n
       ruleId: finding.ruleId,
       category: RULE_CATEGORIES[finding.ruleId] || 'General',
       title: finding.title,
-      status: finding.status || (finding.passed ? 'PASS' : 'FAIL'),
-      severity: finding.severity as 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO',
+      status: finding.status,
+      severity: finding.severity,
       evidence: finding.evidence,
       suggestedFix: finding.suggestedFix,
       citation: finding.citation

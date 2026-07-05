@@ -78,8 +78,20 @@ export interface RuleFinding {
   ruleId: string;
   title: string;
   passed: boolean;
-  status?: 'PASS' | 'FAIL' | 'WARNING';
-  severity: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO' | 'FAIL' | 'WARNING';
+  status: 'PASS' | 'FAIL' | 'WARNING' | 'NOT_APPLICABLE';
+  severity: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
+  evidence: string;
+  message: string;
+  suggestedFix: string;
+  citation: string;
+}
+
+export interface RawRuleFinding {
+  ruleId: string;
+  title: string;
+  passed: boolean;
+  status?: 'PASS' | 'FAIL' | 'WARNING' | 'NOT_APPLICABLE';
+  severity?: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO' | 'FAIL' | 'WARNING';
   evidence: string;
   message: string;
   suggestedFix: string;
@@ -123,7 +135,7 @@ export interface ComplianceReport {
     ruleId: string;
     category: string;
     title: string;
-    status: 'PASS' | 'FAIL' | 'WARNING';
+    status: 'PASS' | 'FAIL' | 'WARNING' | 'NOT_APPLICABLE';
     severity: 'CRITICAL' | 'MAJOR' | 'MINOR' | 'INFO';
     evidence: string;
     suggestedFix: string;
