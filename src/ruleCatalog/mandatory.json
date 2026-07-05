@@ -1,0 +1,156 @@
+[
+  {
+    "id": "MAND_PROD_NAME",
+    "title": "Product Name presence",
+    "category": "Mandatory Declarations",
+    "applicability": "All packaged foods",
+    "requiredField": "productName",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.1.1",
+    "suggestedFix": "Place a clear, legible name of the food product on the principal display panel."
+  },
+  {
+    "id": "MAND_BRAND_NAME",
+    "title": "Brand / Trade Name presence",
+    "category": "Mandatory Declarations",
+    "applicability": "All packaged foods",
+    "requiredField": "brand",
+    "validationType": "presence",
+    "severity": "WARNING",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.1",
+    "suggestedFix": "Ensure your brand logo or trade name is clearly visible on the front panel."
+  },
+  {
+    "id": "MAND_NET_QTY",
+    "title": "Net Quantity presence",
+    "category": "Mandatory Declarations",
+    "applicability": "All packaged foods",
+    "requiredField": "warnings.netQuantity",
+    "validationType": "metric_units",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.5",
+    "suggestedFix": "Declare net quantity on the front panel or near the pricing/batch panel (e.g., \"Net Quantity: 400 g\")."
+  },
+  {
+    "id": "MAND_MANUF_DETAILS",
+    "title": "Manufacturer Details presence",
+    "category": "Mandatory Declarations",
+    "applicability": "All packaged foods",
+    "requiredField": "manufacturer",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.6",
+    "suggestedFix": "Add \"Manufactured by: [Name], [Full physical address including PIN code]\"."
+  },
+  {
+    "id": "DATE_MANUF_PRESENCE",
+    "title": "Manufacture Date presence",
+    "category": "Date Marking",
+    "applicability": "All packaged foods",
+    "requiredField": "dates.manufactureDate",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.8.1",
+    "suggestedFix": "Print a clear manufacture or packing date on the pack (e.g. \"Mfg Date: 12/2025\" or \"Packed on: 15/01/2026\")."
+  },
+  {
+    "id": "DATE_EXPIRY_PRESENCE",
+    "title": "Expiry / Best Before date presence",
+    "category": "Date Marking",
+    "applicability": "All packaged foods",
+    "requiredField": "dates.expiryDate",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.8.2",
+    "suggestedFix": "Provide a \"Best Before\" date (e.g., \"Best Before 6 months from packaging\") or an \"Expiry / Use By\" date."
+  },
+  {
+    "id": "DATE_FORMAT",
+    "title": "Date format compliance",
+    "category": "Date Marking",
+    "applicability": "All packaged foods with dates",
+    "requiredField": "dates",
+    "validationType": "format_match",
+    "severity": "WARNING",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.8",
+    "suggestedFix": "Ensure dates are printed clearly in standard numerical formats like \"DD/MM/YYYY\" or \"MM/YYYY\", or simple verbal formats like \"Best before 6 months from manufacture\"."
+  },
+  {
+    "id": "MAND_BATCH_NUM",
+    "title": "Batch or Lot Number presence",
+    "category": "Mandatory Declarations",
+    "applicability": "All packaged foods",
+    "requiredField": "warnings.batchNumber",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.5.3",
+    "suggestedFix": "Print a clear batch or lot identifier on the pack (e.g., \"Batch No: B1024\" or \"Lot Code: L345\")."
+  },
+  {
+    "id": "MAND_STORAGE_INSTR",
+    "title": "Storage Instructions presence",
+    "category": "Storage Instructions",
+    "applicability": "All packaged foods requiring specific storage",
+    "requiredField": "storageInstructions",
+    "validationType": "presence",
+    "severity": "WARNING",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.8.5",
+    "suggestedFix": "Add standard storage text like \"Store in a cool, dry place away from direct sunlight\" to protect the food quality."
+  },
+  {
+    "id": "FSSAI_LICENSE_PRESENCE",
+    "title": "FSSAI Logo and License presence",
+    "category": "FSSAI Licenses",
+    "applicability": "All foods sold in India",
+    "requiredField": "fssaiLicenses",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.7.1",
+    "suggestedFix": "Add the FSSAI logo followed by your 14-digit FSSAI license number (e.g., \"Lic. No. XXXXXXXXXXXXXX\")."
+  },
+  {
+    "id": "FSSAI_LICENSE_FORMAT",
+    "title": "FSSAI License 14-digit format",
+    "category": "FSSAI Licenses",
+    "applicability": "Foods declaring FSSAI license",
+    "requiredField": "fssaiLicenses",
+    "validationType": "length_check",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.7.1",
+    "suggestedFix": "Verify and print the exact 14-digit FSSAI license number without omitting any digits."
+  },
+  {
+    "id": "FSSAI_LICENSE_PREFIX",
+    "title": "FSSAI License Prefix validation",
+    "category": "FSSAI Licenses",
+    "applicability": "Foods declaring FSSAI license",
+    "requiredField": "fssaiLicenses",
+    "validationType": "prefix_check",
+    "severity": "WARNING",
+    "citation": "FSS (Registration and Licensing of Food Businesses) Regulations, 2011",
+    "suggestedFix": "Double check the printed FSSAI license number digit-by-digit against your registration certificate."
+  },
+  {
+    "id": "IMPORT_ORIGIN_PRESENCE",
+    "title": "Country of Origin presence",
+    "category": "Import Labelling",
+    "applicability": "Imported food products",
+    "requiredField": "importer",
+    "validationType": "origin_check",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.6.2",
+    "suggestedFix": "Declare the exact origin of the food item, e.g., \"Country of Origin: Switzerland\" or \"Product of Malaysia\"."
+  },
+  {
+    "id": "IMPORT_DETAILS_PRESENCE",
+    "title": "Importer Address and FSSAI license",
+    "category": "Import Labelling",
+    "applicability": "Imported food products",
+    "requiredField": "importer",
+    "validationType": "importer_presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.6.2",
+    "suggestedFix": "Affix a standard importer sticker or print: \"Imported and Marketed by: [Importer Name], [Full Physical Address] under FSSAI License No. [14-digits].\""
+  }
+]

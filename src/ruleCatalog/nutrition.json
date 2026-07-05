@@ -1,0 +1,145 @@
+[
+  {
+    "id": "NUTR_TABLE_PRESENCE",
+    "title": "Nutrition Information Table presence",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products",
+    "requiredField": "nutrition",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3",
+    "suggestedFix": "Provide a structured nutritional declaration panel containing Energy, Protein, Carbohydrates, Total Sugar, Added Sugar, Fats, and Sodium."
+  },
+  {
+    "id": "NUTR_ENERGY",
+    "title": "Energy value declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.energy",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.a",
+    "suggestedFix": "Add Energy in kcal (kilocalories) to the nutrition facts table (e.g. \"Energy: 420 kcal\")."
+  },
+  {
+    "id": "NUTR_PROTEIN",
+    "title": "Protein declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.protein",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.b",
+    "suggestedFix": "Declare Protein content in grams (g) in your nutritional table."
+  },
+  {
+    "id": "NUTR_CARBS",
+    "title": "Carbohydrates declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.carbs",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.b",
+    "suggestedFix": "Add Carbohydrates in grams (g) to your nutritional facts panel."
+  },
+  {
+    "id": "NUTR_TOTAL_SUGARS",
+    "title": "Total Sugars declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.totalSugars",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.b",
+    "suggestedFix": "Add \"Total Sugars\" under Carbohydrates in the nutritional facts panel."
+  },
+  {
+    "id": "NUTR_ADDED_SUGARS",
+    "title": "Added Sugars declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.addedSugars",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) First Amendment Regulations, 2020",
+    "suggestedFix": "Add a line item \"Added Sugars\" inside the Sugars subsection of your nutritional facts panel."
+  },
+  {
+    "id": "NUTR_FAT",
+    "title": "Total Fat declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.totalFat",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.b",
+    "suggestedFix": "Add \"Total Fat\" (g) to your nutrition facts table."
+  },
+  {
+    "id": "NUTR_SAT_FAT",
+    "title": "Saturated Fat declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.saturatedFat",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.c",
+    "suggestedFix": "Add a sub-item \"Saturated Fat\" under the \"Total Fat\" heading."
+  },
+  {
+    "id": "NUTR_TRANS_FAT",
+    "title": "Trans Fat declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.transFat",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.c",
+    "suggestedFix": "Add a sub-item \"Trans Fat\" under the \"Total Fat\" heading."
+  },
+  {
+    "id": "NUTR_SODIUM",
+    "title": "Sodium declaration",
+    "category": "Nutrition Labelling",
+    "applicability": "All packaged food products with nutritional table",
+    "requiredField": "nutrition.sodium",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.3.1.d",
+    "suggestedFix": "Add Sodium content in milligrams (mg) to the nutritional facts panel."
+  },
+  {
+    "id": "HFSS_HIGH_SUGAR",
+    "title": "HFSS - High Added Sugar Evaluation",
+    "category": "Food Category Requirements",
+    "applicability": "All products with added sugars and energy declared",
+    "requiredField": "nutrition.addedSugars",
+    "validationType": "ratio_check",
+    "severity": "WARNING",
+    "citation": "FSSAI Dietary Guidelines and HFSS Food Consultation Draft",
+    "suggestedFix": "Consider reformulating to reduce added sugar content or clearly display high-sugar information to consumers."
+  },
+  {
+    "id": "HFSS_HIGH_SODIUM",
+    "title": "HFSS - High Sodium Evaluation",
+    "category": "Food Category Requirements",
+    "applicability": "All products with sodium and energy declared",
+    "requiredField": "nutrition.sodium",
+    "validationType": "ratio_check",
+    "severity": "WARNING",
+    "citation": "FSSAI Guidelines for High Fat, Sugar and Salt (HFSS) Foods",
+    "suggestedFix": "Recommend reducing sodium content or adding a salt-intake warning indicator on the packaging."
+  },
+  {
+    "id": "HFSS_HIGH_TRANS_FAT",
+    "title": "HFSS - Trans Fat limits",
+    "category": "Food Category Requirements",
+    "applicability": "All products with trans fat and total fat declared",
+    "requiredField": "nutrition.transFat",
+    "validationType": "ratio_check",
+    "severity": "WARNING",
+    "citation": "FSS (Prohibition and Restrictions on Sales) Second Amendment Regulations, 2021",
+    "suggestedFix": "Eliminate partially hydrogenated oils from ingredients to reduce industrial trans fat to conform to India's Trans Fat Free goals."
+  }
+]

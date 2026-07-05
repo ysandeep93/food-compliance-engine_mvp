@@ -28,23 +28,37 @@ export interface DateMarking {
   rawValue?: string;
 }
 
-export interface CanonicalProduct {
-  productName: string;
-  brandName: string;
-  fssaiLicense: string;
-  ingredients: string[];
+export interface ExtractedField<T> {
+  value: T;
+  confidence: number;
+  source: string;
+}
+
+export interface LogoData {
   isVeg: boolean | null; // true = Veg, false = Non-Veg, null = undetected
   hasVegLogo: boolean;
-  nutrition: NutritionData;
-  netQuantity: string;
-  manufacturerDetails: string;
-  importerDetails: string;
-  batchNumber: string;
-  dateMarking: DateMarking;
-  storageInstructions: string;
-  claims: string[];
-  allergenInfo: string;
   extractedLogos: string[]; // e.g. ["FSSAI", "Veg", "Non-Veg", "Jaivik Bharat"]
+}
+
+export interface WarningData {
+  batchNumber: string;
+  allergenInfo: string;
+  netQuantity: string;
+}
+
+export interface CanonicalProduct {
+  productName: ExtractedField<string>;
+  brand: ExtractedField<string>;
+  ingredients: ExtractedField<string[]>;
+  nutrition: ExtractedField<NutritionData>;
+  claims: ExtractedField<string[]>;
+  manufacturer: ExtractedField<string>;
+  importer: ExtractedField<string>;
+  fssaiLicenses: ExtractedField<string>;
+  logos: ExtractedField<LogoData>;
+  dates: ExtractedField<DateMarking>;
+  storageInstructions: ExtractedField<string>;
+  warnings: ExtractedField<WarningData>;
 }
 
 export interface RuleResult {
@@ -52,6 +66,17 @@ export interface RuleResult {
   evidence: string;
   suggestedFix: string;
   details?: string;
+}
+
+export interface RuleFinding {
+  ruleId: string;
+  title: string;
+  passed: boolean;
+  severity: 'FAIL' | 'WARNING';
+  evidence: string;
+  message: string;
+  suggestedFix: string;
+  citation: string;
 }
 
 export interface ComplianceRule {
@@ -99,4 +124,7 @@ export interface ComplianceReport {
   }[];
   aiClaimFindings: AIClaimAnalysis[];
   ingredientExplanations: IngredientExplanation[];
+  explanation?: string;
+  consumerFriendlySummary?: string;
+  suggestedFixes?: string[];
 }

@@ -48,7 +48,7 @@ export function generateCompliancePDF(report: ComplianceReport) {
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.text(`Brand: ${report.brandName || 'N/A'}`, 15, yPos + 6);
-  doc.text(`FSSAI Lic. No: ${report.productData.fssaiLicense || 'Not Found'}`, 15, yPos + 12);
+  doc.text(`FSSAI Lic. No: ${report.productData.fssaiLicenses.value || 'Not Found'}`, 15, yPos + 12);
   doc.text(`Audit Date: ${new Date(report.timestamp).toLocaleDateString('en-IN')}`, 15, yPos + 18);
 
   // Scores

@@ -151,14 +151,14 @@ export default function ReportView({ report, onBack }: ReportViewProps) {
               <div>
                 <p className="text-xs text-slate-500 font-sans">Lic. No.</p>
                 <p className="font-mono text-xs font-semibold text-emerald-400">
-                  {report.productData.fssaiLicense || 'Not Found'}
+                  {report.productData.fssaiLicenses.value || 'Not Found'}
                 </p>
               </div>
-              {report.productData.isVeg !== null && (
+              {report.productData.logos.value.isVeg !== null && (
                 <div className="flex items-center space-x-1 border border-white/10 rounded px-2 py-0.5 bg-white/5">
-                  <div className={`h-2.5 w-2.5 rounded-full ${report.productData.isVeg ? 'bg-emerald-500' : 'bg-amber-600'}`} />
+                  <div className={`h-2.5 w-2.5 rounded-full ${report.productData.logos.value.isVeg ? 'bg-emerald-500' : 'bg-amber-600'}`} />
                   <span className="text-[10px] font-bold text-slate-300 uppercase">
-                    {report.productData.isVeg ? 'Veg' : 'Non-Veg'}
+                    {report.productData.logos.value.isVeg ? 'Veg' : 'Non-Veg'}
                   </span>
                 </div>
               )}
@@ -166,6 +166,61 @@ export default function ReportView({ report, onBack }: ReportViewProps) {
           </div>
         </div>
       </div>
+
+      {/* Executive Summary & AI Semantic Insights */}
+      {(report.consumerFriendlySummary || report.explanation) && (
+        <div className="bg-gradient-to-br from-slate-900 to-[#121212] rounded-2xl border border-emerald-500/15 p-6 shadow-sm space-y-6" id="ai-semantic-insights-card">
+          <div className="flex items-center space-x-2">
+            <Sparkles className="h-5 w-5 text-emerald-400" />
+            <h3 className="font-sans text-base font-bold text-white">AI Semantic & Consumer Insights</h3>
+            <span className="text-[10px] bg-emerald-500/10 text-emerald-400 font-bold px-2 py-0.5 rounded font-mono">Semantic Layer</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Consumer Friendly Summary */}
+            {report.consumerFriendlySummary && (
+              <div className="space-y-2">
+                <h4 className="font-sans text-xs font-bold text-slate-400 uppercase tracking-wider">
+                  Consumer Decoded Summary
+                </h4>
+                <p className="text-slate-300 font-sans text-sm leading-relaxed bg-white/2 p-4 rounded-xl border border-white/5">
+                  {report.consumerFriendlySummary}
+                </p>
+              </div>
+            )}
+
+            {/* Expert Regulatory Reasoning / Redesigns */}
+            <div className="space-y-4">
+              {report.explanation && (
+                <div className="space-y-2">
+                  <h4 className="font-sans text-xs font-bold text-slate-400 uppercase tracking-wider">
+                    Expert Legal Explanation
+                  </h4>
+                  <p className="text-slate-300 font-sans text-sm leading-relaxed">
+                    {report.explanation}
+                  </p>
+                </div>
+              )}
+
+              {report.suggestedFixes && report.suggestedFixes.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-white/5">
+                  <h4 className="font-sans text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center space-x-1.5">
+                    <ShieldAlert className="h-3.5 w-3.5 shrink-0" />
+                    <span>Constructive Redesign Suggestions</span>
+                  </h4>
+                  <ul className="space-y-1.5 text-xs text-slate-400 font-sans list-disc pl-4 leading-relaxed">
+                    {report.suggestedFixes.map((fix, idx) => (
+                      <li key={idx} className="hover:text-slate-300 transition-colors">
+                        {fix}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main body: left list, right metadata details */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8" id="report-main-grid">
@@ -366,7 +421,7 @@ export default function ReportView({ report, onBack }: ReportViewProps) {
                   </tr>
                 </thead>
                 <tbody className="bg-[#161616] divide-y divide-white/5 font-mono text-slate-300">
-                  {Object.entries(report.productData.nutrition).map(([key, item]) => {
+                  {Object.entries(report.productData.nutrition.value).map(([key, item]) => {
                     if (!item) return null;
                     const formatLabel = (s: string) => {
                       const labels: Record<string, string> = {

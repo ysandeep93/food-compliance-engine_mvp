@@ -3,7 +3,48 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { ComplianceReport } from '../types';
+import { CanonicalProduct, ComplianceReport } from '../types';
+
+const makeCanonical = (oldData: any): CanonicalProduct => {
+  return {
+    productName: { value: oldData.productName, confidence: 0.99, source: 'gemini' },
+    brand: { value: oldData.brandName, confidence: 0.99, source: 'gemini' },
+    ingredients: { value: oldData.ingredients, confidence: 0.99, source: 'gemini' },
+    nutrition: { value: oldData.nutrition, confidence: 0.99, source: 'gemini' },
+    claims: { value: oldData.claims, confidence: 0.99, source: 'gemini' },
+    manufacturer: { value: oldData.manufacturerDetails, confidence: 0.99, source: 'gemini' },
+    importer: { value: oldData.importerDetails, confidence: 0.99, source: 'gemini' },
+    fssaiLicenses: { value: oldData.fssaiLicense, confidence: 0.99, source: 'gemini' },
+    logos: {
+      value: {
+        isVeg: oldData.isVeg,
+        hasVegLogo: oldData.hasVegLogo,
+        extractedLogos: oldData.extractedLogos,
+      },
+      confidence: 0.99,
+      source: 'gemini'
+    },
+    dates: {
+      value: {
+        manufactureDate: oldData.dateMarking?.manufactureDate || '',
+        bestBefore: oldData.dateMarking?.bestBefore || '',
+        expiryDate: oldData.dateMarking?.expiryDate || '',
+      },
+      confidence: 0.99,
+      source: 'gemini'
+    },
+    storageInstructions: { value: oldData.storageInstructions, confidence: 0.99, source: 'gemini' },
+    warnings: {
+      value: {
+        batchNumber: oldData.batchNumber || '',
+        allergenInfo: oldData.allergenInfo || '',
+        netQuantity: oldData.netQuantity || '',
+      },
+      confidence: 0.99,
+      source: 'gemini'
+    }
+  };
+};
 
 export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
   {
@@ -13,7 +54,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
     brandName: 'Maggi',
     overallScore: 65,
     confidenceScore: 98,
-    productData: {
+    productData: makeCanonical({
       productName: 'Instant Noodles with Masala Tastemaker',
       brandName: 'Maggi',
       fssaiLicense: '10012011000168',
@@ -62,7 +103,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
       claims: ['100% safe', 'Made with choice spices', 'Goodness of Calcium'],
       allergenInfo: 'Contains Wheat and Peanut. May contain Milk, Oats, Soy and Mustard.',
       extractedLogos: ['FSSAI', 'Veg']
-    },
+    }),
     deterministicFindings: [
       {
         ruleId: 'MAND_PROD_NAME',
@@ -175,7 +216,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
     brandName: 'Tropicana',
     overallScore: 90,
     confidenceScore: 99,
-    productData: {
+    productData: makeCanonical({
       productName: '100% Mixed Fruit Juice',
       brandName: 'Tropicana',
       fssaiLicense: '10012022000254',
@@ -212,7 +253,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
       claims: ['100% Mixed Fruit Juice', 'No Added Sugar', 'Rich in Vitamin C'],
       allergenInfo: 'Free from common allergens.',
       extractedLogos: ['FSSAI', 'Veg']
-    },
+    }),
     deterministicFindings: [
       {
         ruleId: 'MAND_PROD_NAME',
@@ -283,7 +324,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
     brandName: 'Cadbury',
     overallScore: 50,
     confidenceScore: 97,
-    productData: {
+    productData: makeCanonical({
       productName: 'Oreo Chocolate Sandwich Cookies',
       brandName: 'Cadbury',
       fssaiLicense: '10014022002711',
@@ -326,7 +367,7 @@ export const SAMPLE_COMPLIANCE_REPORTS: ComplianceReport[] = [
       claims: ['Contains Cocoa rich filling', 'Playful family moment sweetener', 'Light & Crispy biscuit'],
       allergenInfo: 'Contains Wheat and Soy. Manufactured in a line that handles Milk.',
       extractedLogos: ['FSSAI', 'Veg']
-    },
+    }),
     deterministicFindings: [
       {
         ruleId: 'MAND_STORAGE_INSTR',

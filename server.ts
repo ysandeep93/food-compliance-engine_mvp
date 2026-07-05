@@ -9,6 +9,8 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI, Type } from '@google/genai';
 import { calculateComplianceScore, runFssaiComplianceEngine } from './src/utils/fssaiRules';
 import { CanonicalProduct, ComplianceReport } from './src/types';
+import { mapToCanonicalProduct } from './src/mapper/mapper';
+import { retrieveRegulationExcerpts, runSemanticReasoning } from './src/services/semanticReasoning';
 
 // Lazy-initialized Gemini client
 let geminiClient: GoogleGenAI | null = null;
@@ -61,12 +63,12 @@ async function startServer() {
         });
       }
 
-      // Real Gemini OCR + claims analysis
+      // Real Gemini OCR + data extraction (Vision Provider)
       const ai = getGeminiClient();
 
       const systemInstruction = `
-        You are an expert FSSAI (Food Safety and Standards Authority of India) food compliance auditor.
-        Your job is to examine one or more food product packaging label images (which could represent different sides of the package like the front label, side panel, and backside label) and extract all relevant information into a single highly accurate, structured JSON.
+        You are a highly accurate FSSAI food product label data extractor.
+        Your sole job is to examine one or more food product packaging label images (which could represent different sides of the package like the front label, side panel, and backside label) and extract all visible text and raw properties into a highly accurate, structured JSON.
         
         Strictly synthesize information from all provided images collectively. For example, if the nutrition facts table is on one image, the ingredient list is on another, and the FSSAI license is on a third image, merge and combine all of these details into a single consolidated product result.
         
@@ -78,14 +80,12 @@ async function startServer() {
         - Extract the full nutrition facts (per 100g/100ml or per serving). Convert raw string values to numbers where possible (exclude units from values and put units in unit fields).
         - Extract date of manufacture, best before or expiry dates.
         - Extract net quantity, batch number, allergen warnings, and storage instructions.
-        - Extract any marketing claims displayed (e.g., "100% natural", "high protein", "no sugar added").
+        - Extract any marketing claims, badges, or slogans displayed on the package (e.g., "100% natural", "high protein", "no sugar added").
         
-        Additionally, use your expert FSSAI regulatory knowledge to:
-        1. Analyze each extracted claim: Check if it is "COMPLIANT", "MISLEADING", "WARNING", or "UNSUBSTANTIATED" under FSSAI's Advertising and Claims Regulations, 2018. Provide solid regulatory reasoning and citations.
-        2. Explain food additives: For any ingredients with INS numbers (e.g., INS 330, INS 621, INS 211, INS 500(ii)) or stabilizers/preservatives, provide their scientific/common name, purpose, safety rating ("SAFE", "MODERATE", "AVOID"), and a friendly explanation.
+        DO NOT perform any compliance analysis, legal assessments, safety ratings, or additive explanations. Keep this extraction strictly raw and factual.
       `;
 
-      const prompt = "Analyze the provided food packaging label images. Gather all the visible sections (nutrition facts, ingredient list, brand/product name, FSSAI logo/license) across all images to produce a complete consolidated FSSAI compliance report.";
+      const prompt = "Extract all raw text data and packaging sections visible in the provided food packaging label images. Synthesize all views into a single, high-fidelity JSON extraction.";
 
       const imageParts: any[] = [];
       if (images && Array.isArray(images) && images.length > 0) {
@@ -211,42 +211,12 @@ async function startServer() {
             type: Type.ARRAY, 
             items: { type: Type.STRING },
             description: 'Logos detected visually (e.g. "FSSAI", "Veg", "Non-Veg")' 
-          },
-          aiClaimsAnalysis: {
-            type: Type.ARRAY,
-            description: 'Analysis of each extracted claim against FSSAI guidelines',
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                claim: { type: Type.STRING },
-                assessment: { type: Type.STRING, description: "Must be 'COMPLIANT', 'MISLEADING', 'WARNING', or 'UNSUBSTANTIATED'" },
-                reasoning: { type: Type.STRING },
-                citation: { type: Type.STRING },
-                suggestedFix: { type: Type.STRING }
-              },
-              required: ['claim', 'assessment', 'reasoning', 'citation', 'suggestedFix']
-            }
-          },
-          ingredientExplanations: {
-            type: Type.ARRAY,
-            description: 'Explanation of food additives, stabilizers, INS numbers listed in ingredients',
-            items: {
-              type: Type.OBJECT,
-              properties: {
-                name: { type: Type.STRING },
-                purpose: { type: Type.STRING },
-                safetyRating: { type: Type.STRING, description: "Must be 'SAFE', 'MODERATE', 'AVOID', or 'INFO'" },
-                explanation: { type: Type.STRING }
-              },
-              required: ['name', 'purpose', 'safetyRating', 'explanation']
-            }
           }
         },
         required: [
           'productName', 'brandName', 'fssaiLicense', 'ingredients', 'isVeg', 'hasVegLogo',
           'nutrition', 'netQuantity', 'manufacturerDetails', 'importerDetails', 'batchNumber',
-          'dateMarking', 'storageInstructions', 'claims', 'allergenInfo', 'extractedLogos',
-          'aiClaimsAnalysis', 'ingredientExplanations'
+          'dateMarking', 'storageInstructions', 'claims', 'allergenInfo', 'extractedLogos'
         ]
       };
 
@@ -311,38 +281,7 @@ async function startServer() {
       const geminiData = JSON.parse(extractedText.trim());
 
       // Create product model
-      const productData: CanonicalProduct = {
-        productName: geminiData.productName || 'Unknown Product',
-        brandName: geminiData.brandName || 'Unknown Brand',
-        fssaiLicense: geminiData.fssaiLicense || '',
-        ingredients: geminiData.ingredients || [],
-        isVeg: geminiData.isVeg !== undefined ? geminiData.isVeg : null,
-        hasVegLogo: !!geminiData.hasVegLogo,
-        nutrition: {
-          energy: geminiData.nutrition?.energy ? { value: Number(geminiData.nutrition.energy.value) || 0, unit: geminiData.nutrition.energy.unit || 'kcal' } : undefined,
-          protein: geminiData.nutrition?.protein ? { value: Number(geminiData.nutrition.protein.value) || 0, unit: geminiData.nutrition.protein.unit || 'g' } : undefined,
-          carbs: geminiData.nutrition?.carbs ? { value: Number(geminiData.nutrition.carbs.value) || 0, unit: geminiData.nutrition.carbs.unit || 'g' } : undefined,
-          totalSugars: geminiData.nutrition?.totalSugars ? { value: Number(geminiData.nutrition.totalSugars.value) || 0, unit: geminiData.nutrition.totalSugars.unit || 'g' } : undefined,
-          addedSugars: geminiData.nutrition?.addedSugars ? { value: Number(geminiData.nutrition.addedSugars.value) || 0, unit: geminiData.nutrition.addedSugars.unit || 'g' } : undefined,
-          totalFat: geminiData.nutrition?.totalFat ? { value: Number(geminiData.nutrition.totalFat.value) || 0, unit: geminiData.nutrition.totalFat.unit || 'g' } : undefined,
-          saturatedFat: geminiData.nutrition?.saturatedFat ? { value: Number(geminiData.nutrition.saturatedFat.value) || 0, unit: geminiData.nutrition.saturatedFat.unit || 'g' } : undefined,
-          transFat: geminiData.nutrition?.transFat ? { value: Number(geminiData.nutrition.transFat.value) || 0, unit: geminiData.nutrition.transFat.unit || 'g' } : undefined,
-          sodium: geminiData.nutrition?.sodium ? { value: Number(geminiData.nutrition.sodium.value) || 0, unit: geminiData.nutrition.sodium.unit || 'mg' } : undefined,
-        },
-        netQuantity: geminiData.netQuantity || '',
-        manufacturerDetails: geminiData.manufacturerDetails || '',
-        importerDetails: geminiData.importerDetails || '',
-        batchNumber: geminiData.batchNumber || '',
-        dateMarking: {
-          manufactureDate: geminiData.dateMarking?.manufactureDate || '',
-          bestBefore: geminiData.dateMarking?.bestBefore || '',
-          expiryDate: geminiData.dateMarking?.expiryDate || '',
-        },
-        storageInstructions: geminiData.storageInstructions || '',
-        claims: geminiData.claims || [],
-        allergenInfo: geminiData.allergenInfo || '',
-        extractedLogos: geminiData.extractedLogos || [],
-      };
+      const productData: CanonicalProduct = mapToCanonicalProduct(geminiData);
 
       // Run deterministic FSSAI Rule Engine on extracted product model
       const deterministicFindings = runFssaiComplianceEngine(productData);
@@ -350,18 +289,39 @@ async function startServer() {
       // Calculate final score
       const overallScore = calculateComplianceScore(deterministicFindings);
 
-      // Create final report
+      // Retrieve relevant regulation excerpts for the semantic reasoning phase
+      const regulationExcerpts = retrieveRegulationExcerpts(productData, deterministicFindings);
+
+      // Invoke the second AI service for semantic reasoning only
+      let semanticResult;
+      try {
+        semanticResult = await runSemanticReasoning(productData, deterministicFindings, regulationExcerpts, ai);
+      } catch (reasoningError) {
+        console.error('Semantic reasoning service failed, using fallback:', reasoningError);
+        semanticResult = {
+          explanation: 'Standard FSSAI label analysis completed. The deterministic validation rules have checked required elements like dates, allergen warning formatting, and nutrition details.',
+          consumerFriendlySummary: `Standard FSSAI analysis of ${productData.productName.value || 'this product'}. All mandatory label disclosures have been checked.`,
+          misleadingClaimAnalysis: [],
+          ingredientExplanations: [],
+          suggestedFixes: []
+        };
+      }
+
+      // Create final report combining both extraction and semantic reasoning results
       const report: ComplianceReport = {
         id: 'report-' + Math.random().toString(36).substring(2, 11),
         timestamp: new Date().toISOString(),
-        productName: productData.productName,
-        brandName: productData.brandName,
+        productName: productData.productName.value,
+        brandName: productData.brand.value,
         overallScore,
         confidenceScore: Math.floor(Math.random() * 5) + 94, // 94-98% confident extraction
         productData,
         deterministicFindings,
-        aiClaimFindings: geminiData.aiClaimsAnalysis || [],
-        ingredientExplanations: geminiData.ingredientExplanations || [],
+        aiClaimFindings: semanticResult.misleadingClaimAnalysis,
+        ingredientExplanations: semanticResult.ingredientExplanations,
+        explanation: semanticResult.explanation,
+        consumerFriendlySummary: semanticResult.consumerFriendlySummary,
+        suggestedFixes: semanticResult.suggestedFixes,
       };
 
       res.json(report);
@@ -394,7 +354,7 @@ async function startServer() {
 // Generates a fully compliant report dynamically if user is in mock mode or has no API key
 function generateDynamicMockReport(mimeType: string): ComplianceReport {
   // Let's return a realistic mock audit report for an uploaded fruit bar or general snack
-  const productData: CanonicalProduct = {
+  const mockRaw = {
     productName: 'Real Almond & Berries Energy Bar',
     brandName: 'Nourish India',
     fssaiLicense: '20019011000342', // valid state format
@@ -437,14 +397,16 @@ function generateDynamicMockReport(mimeType: string): ComplianceReport {
     extractedLogos: ['FSSAI', 'Veg']
   };
 
+  const productData: CanonicalProduct = mapToCanonicalProduct(mockRaw);
+
   const deterministicFindings = runFssaiComplianceEngine(productData);
   const overallScore = calculateComplianceScore(deterministicFindings);
 
   return {
     id: 'report-mock-' + Math.random().toString(36).substring(2, 11),
     timestamp: new Date().toISOString(),
-    productName: productData.productName,
-    brandName: productData.brandName,
+    productName: productData.productName.value,
+    brandName: productData.brand.value,
     overallScore,
     confidenceScore: 99,
     productData,
@@ -485,6 +447,13 @@ function generateDynamicMockReport(mimeType: string): ComplianceReport {
         safetyRating: 'SAFE',
         explanation: 'INS 330 is Citric Acid, naturally present in lemons. It balances sweetness, provides a slight sour note, and acts as a natural preservative.'
       }
+    ],
+    explanation: 'The label is largely compliant with core FSSAI requirements. It features a valid FSSAI license format, manufacture date, storage instructions, and a clear nutrition table. However, it violates semantic rules with claims of therapeutic benefits ("Weight Loss Companion") and unverified organic branding.',
+    consumerFriendlySummary: 'A mostly clean and safe snack bar. High in natural almonds and oats, but watch out: it contains 12g of added sugar per bar, which contributes to a high calorie load. The marketing claim "Weight Loss Companion" is misleading given the added sugar content.',
+    suggestedFixes: [
+      'Incorporate the Jaivik Bharat logo and its organic registration number next to the "100% Organic Ingredients" claim.',
+      'Replace "Weight Loss Companion" with a more accurate, compliant marketing phrase like "A wholesome grab-and-go energy snack".',
+      'Add a dedicated allergen box warning "Allergen Warning: Contains Wheat and Nuts" near the ingredient list.'
     ]
   };
 }

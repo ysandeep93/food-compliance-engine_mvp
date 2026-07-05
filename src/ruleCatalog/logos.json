@@ -1,0 +1,13 @@
+[
+  {
+    "id": "VEG_NONVEG_PRESENCE",
+    "title": "Veg / Non-Veg symbol presence",
+    "category": "Veg / Non-Veg Symbols",
+    "applicability": "All packaged food products",
+    "requiredField": "logos.isVeg",
+    "validationType": "presence_and_graphic",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.4",
+    "suggestedFix": "Incorporate the FSSAI Veg (green circle inside green square) or Non-Veg (brown triangle inside brown square) symbol on the front panel."
+  }
+]

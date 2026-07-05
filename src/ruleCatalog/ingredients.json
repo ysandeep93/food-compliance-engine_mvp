@@ -1,0 +1,46 @@
+[
+  {
+    "id": "MAND_INGREDIENTS",
+    "title": "List of Ingredients presence",
+    "category": "Ingredient Declaration",
+    "applicability": "All food products with more than one ingredient",
+    "requiredField": "ingredients",
+    "validationType": "presence",
+    "severity": "FAIL",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.2",
+    "suggestedFix": "Add a list of ingredients in descending order of weight or volume at the time of manufacture."
+  },
+  {
+    "id": "ALLERGEN_WARNING",
+    "title": "Allergen Information check",
+    "category": "Special Declarations",
+    "applicability": "Food products containing major allergens",
+    "requiredField": "warnings.allergenInfo",
+    "validationType": "allergen_check",
+    "severity": "WARNING",
+    "citation": "FSS (Labelling and Display) Regulations, 2020 - Clause 2.2.2.3",
+    "suggestedFix": "Add a dedicated allergen box/statement right under the ingredients list, e.g., \"Allergen Warning: Contains Wheat and Milk. Produced in a facility that also processes nuts.\""
+  },
+  {
+    "id": "MSG_WARNING_CHECK",
+    "title": "Monosodium Glutamate (MSG) declaration",
+    "category": "Special Declarations",
+    "applicability": "Food products containing added MSG",
+    "requiredField": "ingredients",
+    "validationType": "msg_check",
+    "severity": "WARNING",
+    "citation": "FSS (Packaging and Labelling) Regulations, 2011 - Clause 2.4.4.12",
+    "suggestedFix": "Print: \"CONTAINS ADDED MONOSODIUM GLUTAMATE. NOT RECOMMENDED FOR INFANTS AND CHILDREN BELOW 12 MONTHS.\""
+  },
+  {
+    "id": "SWEETENER_WARNING_CHECK",
+    "title": "Artificial Sweetener declaration",
+    "category": "Special Declarations",
+    "applicability": "Food products containing artificial sweeteners",
+    "requiredField": "ingredients",
+    "validationType": "sweetener_check",
+    "severity": "FAIL",
+    "citation": "FSS (Packaging and Labelling) Regulations, 2011 - Clause 2.4.4.2",
+    "suggestedFix": "Add the mandatory label statement: \"CONTAINS ARTIFICIAL SWEETENER AND FOR CALORIE CONSCIOUS\" on the front panel."
+  }
+]
