@@ -4,6 +4,7 @@
  */
 
 import { CanonicalProduct, ComplianceReport } from '../types';
+import { parseFssaiLicenses } from '../mapper/mapper';
 
 const makeCanonical = (oldData: any): CanonicalProduct => {
   return {
@@ -14,7 +15,7 @@ const makeCanonical = (oldData: any): CanonicalProduct => {
     claims: { value: oldData.claims, confidence: 0.99, source: 'gemini' },
     manufacturer: { value: oldData.manufacturerDetails, confidence: 0.99, source: 'gemini' },
     importer: { value: oldData.importerDetails, confidence: 0.99, source: 'gemini' },
-    fssaiLicenses: { value: oldData.fssaiLicense, confidence: 0.99, source: 'gemini' },
+    fssaiLicenses: { value: parseFssaiLicenses(oldData.fssaiLicenses || oldData.fssaiLicense), confidence: 0.99, source: 'gemini' },
     logos: {
       value: {
         isVeg: oldData.isVeg,

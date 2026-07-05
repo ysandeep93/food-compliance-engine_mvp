@@ -147,15 +147,28 @@ export default function ReportView({ report, onBack }: ReportViewProps) {
               <p className="text-xs text-slate-500 font-sans">Brand / Manufacturer</p>
               <p className="font-sans text-sm font-medium text-slate-300 line-clamp-1">{report.brandName || 'N/A'}</p>
             </div>
-            <div className="flex justify-between items-center">
-              <div>
-                <p className="text-xs text-slate-500 font-sans">Lic. No.</p>
-                <p className="font-mono text-xs font-semibold text-emerald-400">
-                  {report.productData.fssaiLicenses.value || 'Not Found'}
-                </p>
+            <div className="flex justify-between items-start">
+              <div className="flex-1 mr-2">
+                <p className="text-xs text-slate-500 font-sans mb-1">FSSAI Licenses</p>
+                {!report.productData.fssaiLicenses?.value || report.productData.fssaiLicenses.value.length === 0 ? (
+                  <p className="font-mono text-xs font-semibold text-rose-400">Not Found</p>
+                ) : (
+                  <div className="space-y-1 max-h-[80px] overflow-y-auto pr-1">
+                    {report.productData.fssaiLicenses.value.map((lic, index) => (
+                      <div key={index} className="flex items-center space-x-2 text-[11px] bg-white/5 border border-white/5 px-2 py-0.5 rounded">
+                        <span className="font-mono font-semibold text-emerald-400">
+                          {lic.number}
+                        </span>
+                        <span className="text-[9px] text-slate-400 font-medium lowercase font-mono bg-white/10 px-1 rounded">
+                          {lic.type}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               {report.productData.logos.value.isVeg !== null && (
-                <div className="flex items-center space-x-1 border border-white/10 rounded px-2 py-0.5 bg-white/5">
+                <div className="flex items-center space-x-1 border border-white/10 rounded px-2 py-0.5 bg-white/5 mt-5">
                   <div className={`h-2.5 w-2.5 rounded-full ${report.productData.logos.value.isVeg ? 'bg-emerald-500' : 'bg-amber-600'}`} />
                   <span className="text-[10px] font-bold text-slate-300 uppercase">
                     {report.productData.logos.value.isVeg ? 'Veg' : 'Non-Veg'}

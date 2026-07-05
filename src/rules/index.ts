@@ -64,7 +64,7 @@ for (const rule of allCatalogRules) {
   RULE_CATEGORIES[rule.id] = rule.category;
 }
 
-export function runAllRules(product: CanonicalProduct): RuleFinding[] {
+export function runAllRules(product: CanonicalProduct, threshold: number = 0.70): RuleFinding[] {
   const findings: RuleFinding[] = [];
   
   const allGroups = [
@@ -80,6 +80,40 @@ export function runAllRules(product: CanonicalProduct): RuleFinding[] {
     for (const rule of group) {
       const result = rule(product);
       if (result !== null) {
+        const catalogRule = getRuleFromCatalog(result.ruleId);
+        if (catalogRule && catalogRule.requiredField) {
+          const firstPart = catalogRule.requiredField.split('.')[0];
+          const extractedField = (product as any)[firstPart];
+          
+          if (extractedField && typeof extractedField === 'object') {
+            const conf = extractedField.confidence;
+            if (conf !== undefined && conf < threshold) {
+              if (!result.passed) {
+                const val = extractedField.value;
+                const isValueMissing = 
+                  val === null || 
+                  val === undefined || 
+                  (typeof val === 'string' && val.trim() === '') ||
+                  (Array.isArray(val) && val.length === 0) ||
+                  (typeof val === 'object' && Object.keys(val).length === 0);
+
+                const evidenceLower = (result.evidence || '').toLowerCase();
+                const isMissingEvidence = 
+                  evidenceLower.includes('missing') || 
+                  evidenceLower.includes('not detected') || 
+                  evidenceLower.includes('not found') ||
+                  evidenceLower.includes('not clearly detected') ||
+                  evidenceLower.includes('neither expiry date nor best before');
+
+                if (isValueMissing || isMissingEvidence) {
+                  result.evidence = "Unable to Verify";
+                  result.message = "Unable to Verify due to low extraction confidence.";
+                  result.suggestedFix = "Re-upload a clearer image of the label with better lighting and resolution.";
+                }
+              }
+            }
+          }
+        }
         findings.push(result);
       }
     }

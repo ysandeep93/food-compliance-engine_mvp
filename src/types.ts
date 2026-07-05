@@ -29,8 +29,8 @@ export interface DateMarking {
 }
 
 export interface ExtractedField<T> {
-  value: T;
-  confidence: number;
+  value: T | null;
+  confidence?: number;
   source: string;
 }
 
@@ -46,6 +46,11 @@ export interface WarningData {
   netQuantity: string;
 }
 
+export interface FssaiLicense {
+  number: string;
+  type: 'manufacturer' | 'importer' | 'marketer' | 'unknown';
+}
+
 export interface CanonicalProduct {
   productName: ExtractedField<string>;
   brand: ExtractedField<string>;
@@ -54,7 +59,7 @@ export interface CanonicalProduct {
   claims: ExtractedField<string[]>;
   manufacturer: ExtractedField<string>;
   importer: ExtractedField<string>;
-  fssaiLicenses: ExtractedField<string>;
+  fssaiLicenses: ExtractedField<FssaiLicense[]>;
   logos: ExtractedField<LogoData>;
   dates: ExtractedField<DateMarking>;
   storageInstructions: ExtractedField<string>;

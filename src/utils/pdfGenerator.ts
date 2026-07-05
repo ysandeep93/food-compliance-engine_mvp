@@ -48,7 +48,10 @@ export function generateCompliancePDF(report: ComplianceReport) {
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
   doc.text(`Brand: ${report.brandName || 'N/A'}`, 15, yPos + 6);
-  doc.text(`FSSAI Lic. No: ${report.productData.fssaiLicenses.value || 'Not Found'}`, 15, yPos + 12);
+  const licenseStr = report.productData.fssaiLicenses.value && report.productData.fssaiLicenses.value.length > 0
+    ? report.productData.fssaiLicenses.value.map(l => `${l.number} (${l.type})`).join(', ')
+    : 'Not Found';
+  doc.text(`FSSAI Lic. No: ${licenseStr}`, 15, yPos + 12);
   doc.text(`Audit Date: ${new Date(report.timestamp).toLocaleDateString('en-IN')}`, 15, yPos + 18);
 
   // Scores

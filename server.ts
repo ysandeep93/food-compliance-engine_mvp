@@ -111,7 +111,18 @@ async function startServer() {
         properties: {
           productName: { type: Type.STRING, description: 'Name of the food product' },
           brandName: { type: Type.STRING, description: 'Brand or trade name' },
-          fssaiLicense: { type: Type.STRING, description: '14-digit FSSAI license number (extract only the digits)' },
+          fssaiLicenses: {
+            type: Type.ARRAY,
+            description: 'List of FSSAI licenses found on the label. Each license contains a 14-digit license number and a type: "manufacturer", "importer", "marketer", or "unknown".',
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                number: { type: Type.STRING, description: '14-digit FSSAI license number (extract only digits)' },
+                type: { type: Type.STRING, description: 'Role of the license: manufacturer, importer, marketer, or unknown' }
+              },
+              required: ['number', 'type']
+            }
+          },
           ingredients: { 
             type: Type.ARRAY, 
             items: { type: Type.STRING },
@@ -214,7 +225,7 @@ async function startServer() {
           }
         },
         required: [
-          'productName', 'brandName', 'fssaiLicense', 'ingredients', 'isVeg', 'hasVegLogo',
+          'productName', 'brandName', 'fssaiLicenses', 'ingredients', 'isVeg', 'hasVegLogo',
           'nutrition', 'netQuantity', 'manufacturerDetails', 'importerDetails', 'batchNumber',
           'dateMarking', 'storageInstructions', 'claims', 'allergenInfo', 'extractedLogos'
         ]
@@ -283,8 +294,12 @@ async function startServer() {
       // Create product model
       const productData: CanonicalProduct = mapToCanonicalProduct(geminiData);
 
+      const threshold = req.body.confidenceThreshold !== undefined 
+        ? Number(req.body.confidenceThreshold) 
+        : (process.env.CONFIDENCE_THRESHOLD !== undefined ? Number(process.env.CONFIDENCE_THRESHOLD) : 0.70);
+
       // Run deterministic FSSAI Rule Engine on extracted product model
-      const deterministicFindings = runFssaiComplianceEngine(productData);
+      const deterministicFindings = runFssaiComplianceEngine(productData, threshold);
 
       // Calculate final score
       const overallScore = calculateComplianceScore(deterministicFindings);

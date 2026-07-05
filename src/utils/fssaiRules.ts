@@ -6,9 +6,9 @@
 import { CanonicalProduct, ComplianceReport } from '../types';
 import { runAllRules, RULE_CATEGORIES } from '../rules';
 
-export function runFssaiComplianceEngine(product: CanonicalProduct): ComplianceReport['deterministicFindings'] {
+export function runFssaiComplianceEngine(product: CanonicalProduct, threshold: number = 0.70): ComplianceReport['deterministicFindings'] {
   const findings: ComplianceReport['deterministicFindings'] = [];
-  const rawFindings = runAllRules(product);
+  const rawFindings = runAllRules(product, threshold);
 
   for (const finding of rawFindings) {
     findings.push({
